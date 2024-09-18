@@ -5,6 +5,8 @@ class UsersController < ApplicationController
   # Disable CSRF protection for API requests
   protect_from_forgery with: :null_session
 
+  skip_before_action :authenticate_request, only: [:signup, :login]
+
   def signup
     user = User.new(signup_params)
     if user.save
@@ -41,7 +43,7 @@ class UsersController < ApplicationController
   end
 
   def encode_token(payload)
-    JWT.encode(payload, ENV['JWT_SECRET_KEY'])
+    JWT.encode(payload, ENV['JWT_SECRET_KEY'], 'HS256')
   end
 
 end

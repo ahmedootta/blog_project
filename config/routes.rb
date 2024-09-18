@@ -3,6 +3,9 @@ Rails.application.routes.draw do
   post 'signup', to: 'users#signup'
   post 'login', to: 'users#login'
 
+   # create routes and direct it to methods in controller automatic 'built-in_methods names'
+   resources :posts
+   # Other routes...
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
