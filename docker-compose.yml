@@ -24,7 +24,7 @@ services:
       - "postgres_data:/var/lib/postgresql/data"
     environment:
       - POSTGRES_USER=ahmedfadl
-      - POSTGRES_PASSWORD='12345'
+      - POSTGRES_PASSWORD='ahmedfadl'
       - POSTGRES_DB=blog_development
 
 volumes:
