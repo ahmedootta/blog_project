@@ -8,7 +8,14 @@ class UsersController < ApplicationController
   skip_before_action :authenticate_request, only: [:signup, :login]
 
   def signup
-    user = User.new(signup_params)
+    user_params = signup_params
+  
+    if user_params[:password] != user_params[:confirmation_password]
+      render json: { error: 'Password and confirmation password do not match' }, status: :unprocessable_entity
+      return
+    end
+  
+    user = User.new(user_params.except(:confirmation_password)) # Exclude confirmation_password when creating the user
     if user.save
       render json: { message: 'User created successfully' }, status: :created
     else
@@ -35,7 +42,7 @@ class UsersController < ApplicationController
   private
 
   def signup_params
-    params.permit(:name, :email, :password, :image)
+    params.permit(:name, :email, :password, :confirmation_password, :image)
   end
 
   def login_params
