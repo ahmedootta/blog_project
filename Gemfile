@@ -23,10 +23,10 @@ gem "jbuilder"
 # gem "kredis"
 
 # use json web tokens
-gem 'jwt'
+gem "jwt"
 
 # rewquire JWT key from .env file i created
-gem 'dotenv-rails', groups: [:development, :test]
+gem "dotenv-rails", groups: [:development, :test]
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1.7"
