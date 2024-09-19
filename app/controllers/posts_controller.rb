@@ -21,13 +21,17 @@ class PostsController < ApplicationController
 
   def index
     user = get_logged_user
-    if user
-      # Use the logged-in user
-      render json: { message: "Hello, #{user.name}!" }
-    else
-      render json: { error: "User not found" }, status: :not_found
-    end  
+    all_posts = Post.includes(:author, :tags).all
+
+    render json: all_posts.as_json(
+    only: [:id, :title, :body], # Include specific post attributes
+    include: {
+      author: { only: [:name] }, # Include only the author's name
+      tags: { only: [:name] }    # Include only tag names
+    }
+  )
   end
+  
 
   def show
     user = get_logged_user
