@@ -19,6 +19,7 @@ class PostsController < ApplicationController
     end
   end
 
+  # show all_posts with author_name & tags
   def index
     user = get_logged_user
     all_posts = Post.includes(:author, :tags).all
@@ -27,19 +28,19 @@ class PostsController < ApplicationController
     only: [:id, :title, :body], # Include specific post attributes
     include: {
       author: { only: [:name] }, # Include only the author's name
-      tags: { only: [:name] }    # Include only tag names
+      tags: { only: [:name] }   # Include only tag names
     }
   )
   end
   
-
+  # get post by_id
   def show
     user = get_logged_user
-    if user
-      # Use the logged-in user
-      render json: { message: "Hello, #{user.name}!" }
-    else
-      render json: { error: "User not found" }, status: :not_found
+    id  = params.permit(:id)['id'].to_i
+    begin
+      target_post = Post.find(id)
+    rescue
+      render json: { error: "Post doesn't exist!" } 
     end  
   end
 
