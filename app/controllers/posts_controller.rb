@@ -39,6 +39,7 @@ class PostsController < ApplicationController
     id  = params.permit(:id)['id'].to_i
     begin
       target_post = Post.find(id)
+      render json: target_post.as_json
     rescue
       render json: { error: "Post doesn't exist!" } 
     end  
