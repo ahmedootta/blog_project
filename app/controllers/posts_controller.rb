@@ -46,23 +46,45 @@ class PostsController < ApplicationController
   end
 
   def update
-    user = get_logged_user
-    if user
-      # Use the logged-in user
-      render json: { message: "Hello, #{user.name}!" }
-    else
-      render json: { error: "User not found" }, status: :not_found
-    end  
+    user_id = get_logged_user.id
+    post_id = params.permit(:id)['id'].to_i
+    
+    begin
+      target_post = Post.find(post_id)
+      if target_post.author_id == user_id
+        begin
+          # code to update post...
+          render json: { message: "Post has been updated!" }
+        rescue
+          render json: { error: "Failed to update!"}, status: unprocessable_entity
+        end 
+      else
+        render json: { error: 'Unathorized to update post' }, status: :unauthorized
+      end
+    rescue
+      render json: { error: "Post doesn't exist!" }
+    end      
   end
   
   def destroy
-    user = get_logged_user
-    if user
-      # Use the logged-in user
-      render json: { message: "Hello, #{user.name}!" }
-    else
-      render json: { error: "User not found" }, status: :not_found
-    end  
+    user_id = get_logged_user.id
+    post_id = params.permit(:id)['id'].to_i
+
+    begin
+      target_post = Post.find(post_id)
+      if target_post.author_id == user_id
+        begin
+          target_post.destroy
+          render json: { message: "Post has been deleted!" }
+        rescue
+          render json: { error: "Failed to delete!"}, status: unprocessable_entity
+        end 
+      else
+        render json: { error: 'Unathorized to delete post' }, status: :unauthorized
+      end
+    rescue
+      render json: { error: "Post doesn't exist!" }
+    end      
   end
 
 
