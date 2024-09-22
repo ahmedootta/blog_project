@@ -13,18 +13,19 @@ class ApplicationController < ActionController::Base
     auth_header = request.headers['Authorization']
     token = auth_header.split(' ').last if auth_header
     if token.present?
-      begin # like try{}
-        decoded_token = JWT.decode(token, ENV['JWT_SECRET_KEY'], true, algorithm: 'HS256') # return list which is: [0] => id & [1] => {'alg'=>'HS256'}
-        @logged_user = User.find(decoded_token[0]) # self.logged_user == instance property to be inherited form this class not just variable
-      rescue JWT::ExpiredSignature # except
+      begin
+        decoded_token = JWT.decode(token, ENV['JWT_SECRET_KEY'], true, algorithm: 'HS256')
+        @logged_user = User.find(decoded_token[0])
+      rescue JWT::ExpiredSignature
         render json: { error: 'Token has expired' }, status: :unauthorized
       rescue JWT::DecodeError => e
         render json: { error: "Invalid token: #{e.message}" }, status: :unauthorized
       end
     else
-      render json: { error: "Token never sent: #{e.message}" }, status: :unauthorized
+      render json: { error: "Token not provided" }, status: :unauthorized
     end
   end
+  
 
   def get_logged_user  # function return logged user to use it in other controllers..
     @logged_user 

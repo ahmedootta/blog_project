@@ -22,28 +22,49 @@ class PostsController < ApplicationController
   # show all_posts with author_name & tags
   def index
     user = get_logged_user
-    all_posts = Post.includes(:author, :tags).all
+    all_posts = Post.includes(:author, :tags, comments: :commenter).all
 
     render json: all_posts.as_json(
-    only: [:id, :title, :body], # Include specific post attributes
-    include: {
-      author: { only: [:name] }, # Include only the author's name
-      tags: { only: [:name] }   # Include only tag names
-    }
-  )
+      only: [:id, :title, :body], # Include specific post attributes
+      include: {
+        author: { only: [:name] }, # Include only the author's name
+        tags: { only: [:name] },   # Include only tag names
+        comments: {
+          only: [:body],           # Include comment body
+          include: {
+            commenter: { only: [:name] }  # Include commenter's name
+          }
+        }
+      }
+    )
   end
   
-  # GET POST BY ID
-  def show
-    user = get_logged_user
-    id  = params.permit(:id)['id'].to_i
-    begin
-      target_post = Post.find(id)
-      render json: target_post.as_json
-    rescue
-      render json: { error: "Post doesn't exist!" } 
-    end  
+ # GET POST BY ID
+def show
+  user = get_logged_user
+  id = params.permit(:id)['id'].to_i
+  
+  begin
+    target_post = Post.includes(:author, :tags, comments: :commenter).find(id)
+    
+    render json: target_post.as_json(
+      only: [:id, :title, :body], # Include specific post attributes
+      include: {
+        author: { only: [:name] }, # Include only the author's name
+        tags: { only: [:name] },   # Include only tag names
+        comments: {
+          only: [:body],           # Include comment body
+          include: {
+            commenter: { only: [:name] }  # Include commenter's name
+          }
+        }
+      }
+    )
+  rescue
+    render json: { error: "Post doesn't exist!" }, status: :not_found
   end
+end
+
 
   # UPDATE POST INCLUDED TAGS BY THE AUTHOR
   def update
