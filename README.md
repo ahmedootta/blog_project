@@ -40,3 +40,31 @@ This Blog Application provides a RESTful API that enables user authentication an
 - **Sidekiq**: Background processing for scheduling tasks (e.g., post deletion).
 - **Redis**: Used alongside Sidekiq for job management.
 - **Docker**: Containerization for easy deployment and management of the application.
+
+## API Routes
+
+```
+POST   /signup
+POST   /login
+GET    /posts            POST /posts
+GET    /posts/:id        PATCH/DELETE /posts/:id
+GET    /posts/:id/comments   POST /posts/:id/comments
+```
+
+## Getting Started
+
+With Docker:
+
+```bash
+docker build -t blog_project .
+docker compose up   # runs Rails + Sidekiq + Redis + Postgres, if using a compose setup
+```
+
+Without Docker:
+
+```bash
+bundle install
+rails db:create db:migrate
+bundle exec sidekiq &   # for the scheduled post-deletion jobs
+rails server
+```
